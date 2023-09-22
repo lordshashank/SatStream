@@ -1,6 +1,6 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
-
+import { MoralisProvider } from "react-moralis";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -11,8 +11,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <script async src="https://saturn.tech/widget.js"></script>
-      <body className={inter.className}>{children}</body>
+      <MoralisProvider>
+        <script async src="https://saturn.tech/widget.js"></script>
+        <body className={inter.className}>{children}</body>
+      </MoralisProvider>
     </html>
   );
 }
