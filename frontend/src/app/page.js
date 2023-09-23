@@ -3,21 +3,21 @@ import Image from "next/image";
 import styles from "./page.module.css";
 import { NFTStorage } from "nft.storage";
 import { useState } from "react";
-// import { ConnectButton } from "web3uikit";
-// import { useMoralis } from "react-moralis";
+import { MoralisProvider } from "react-moralis";
+import Header from "../../components/header";
+import useDealStatus from "../../components/useDealStatus";
 export default function Home() {
   const NFT_STORAGE_TOKEN = process.env.NEXT_PUBLIC_NFT_STORAGE_TOKEN;
   const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
   const client = new NFTStorage({ token: NFT_STORAGE_TOKEN });
   const LIGHTHOUSE_DEAL_DOWNLOAD_ENDPOINT =
     "https://gateway.lighthouse.storage/ipfs/";
-  // const { account } = useMoralis();
-  // console.log(account);
 
   const [file, setFile] = useState(null);
   const [uploadStatus, setUploadStatus] = useState(null);
   const [jobregStatus, setJobregStatus] = useState(null);
   const [cid, setCid] = useState(null);
+
   async function upload() {
     if (!file) {
       console.log("No file selected");
@@ -95,26 +95,28 @@ export default function Home() {
     }
   }
   return (
-    <main className={styles.main}>
-      {/* <ConnectButton moralisAuth={false} /> */}
-      <h1 className={styles.title}>Welcome to SatStream</h1>
-      <p className={styles.description}>
-        Get started by uploading your first video
-      </p>
-      <input type="file" onChange={handleFileChange} />
-      <button
-        onClick={async () => {
-          await uploadFile();
-          // registerJobForm();
-        }}
-      >
-        Upload
-      </button>
-      <Image
-        src="https://ipfs.io/ipfs/bafybeihfy4opphtnkbzihf5mfziioxitlqyuctnezauydnycaashti6asi/fail-mascot.gif"
-        width={400}
-        height={400}
-      />
-    </main>
+    <MoralisProvider appId="87" serverUrl="http://localhost:3000">
+      <main className={styles.main}>
+        <Header />
+        <h1 className={styles.title}>Welcome to SatStream</h1>
+        <p className={styles.description}>
+          Get started by uploading your first video
+        </p>
+        <input type="file" onChange={handleFileChange} />
+        <button
+          onClick={async () => {
+            await uploadFile();
+            // registerJobForm();
+          }}
+        >
+          Upload
+        </button>
+        <Image
+          src="https://ipfs.io/ipfs/bafybeihfy4opphtnkbzihf5mfziioxitlqyuctnezauydnycaashti6asi/fail-mascot.gif"
+          width={400}
+          height={400}
+        />
+      </main>
+    </MoralisProvider>
   );
 }

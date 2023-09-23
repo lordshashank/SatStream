@@ -136,8 +136,8 @@ app.post("/api/uploadFile", upload.single("file"), async (req, res) => {
     }
 
     console.log("Submitting job to aggregator contract with CID: ", newJob.cid)
-    await registerJob(newJob)
-
+    storedNodeJobs.push(newJob)
+    saveJobsToState()
     return res.status(201).json({
         message: "Job registered successfully.",
         cid: lighthouse_cid,
