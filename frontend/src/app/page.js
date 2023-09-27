@@ -1,8 +1,11 @@
+"use client";
 import VideoCard from "@/components/VideoCard";
 import Header from "@/components/Header";
 import classes from "@/styles/Page.module.css";
 import Link from "next/link";
-
+import useWeb3 from "@/components/useWeb3";
+import { useState, useEffect } from "react";
+import { useDatabase } from "../components/useDatabase";
 const video1 = {
   id: "2eliQ_KR8yA",
   image:
@@ -17,27 +20,35 @@ const video1 = {
   timeDuration: "3:39",
 };
 
-async function fetchVideos() {
-  try {
-    console.log("request sent");
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/allvideo`
-    );
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error(error);
+export default function Page() {
+  const { userAccount } = useWeb3();
+  const [videos, setVideos] = useState([]);
+  const { createDatabase } = useDatabase();
+  async function fetchVideos() {
+    try {
+      console.log("request sent");
+      console.log(process.env.NEXT_PUBLIC_BACKEND_URL);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/allvideo`
+      );
+      const data = await response.json();
+      setVideos(data);
+      console.log(data);
+      return data;
+    } catch (error) {
+      console.error(error);
+    }
   }
-}
-export default async function Page() {
-  const videos = await fetchVideos();
+  useEffect(() => {
+    fetchVideos();
+  }, []);
 
   return (
     <>
       <Header />
       <div className={classes.container}>
         <main className={classes["videos-container"]}>
-          {videos.map((video) => (
+          {videos?.map((video) => (
             <Link href={`/video-player/${video.videocid}`}>
               <VideoCard
                 thumbnailCid={video.thumbnailcid}
@@ -50,6 +61,7 @@ export default async function Page() {
               />
             </Link>
           ))}
+          <button onClick={createDatabase("satStream")}>Create Database</button>
         </main>
       </div>
     </>

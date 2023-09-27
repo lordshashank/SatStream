@@ -74,7 +74,7 @@ const UploadFile = ({ onClose }) => {
   }
 
   const onPublish = async () => {
-    // await submitCid(cid.video);
+    await submitCid(cid.video);
     const data = {
       video: {
         videocid: cid.video,

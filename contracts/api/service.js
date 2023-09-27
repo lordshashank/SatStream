@@ -162,8 +162,8 @@ app.post("/api/uploadFile", upload.single("file"), async (req, res) => {
     }
 
     console.log("Submitting job to aggregator contract with CID: ", newJob.cid)
-    storedNodeJobs.push(newJob)
-    saveJobsToState()
+    // storedNodeJobs.push(newJob)
+    // saveJobsToState()
     //
     //
     //
@@ -270,6 +270,7 @@ app.post("/api/publish", async (req, res) => {
 
 app.get("/api/allvideo", async (req, res) => {
     try {
+        console.log("allvideo")
         const usersvideos = await User.find({}).select("videos")
         console.log(usersvideos)
         const allVideos = usersvideos.reduce((videosArray, user) => {
