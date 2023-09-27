@@ -20,28 +20,21 @@ const video1 = {
   timeDuration: "3:39",
 };
 
-export default function Page() {
-  const { userAccount } = useWeb3();
-  const [videos, setVideos] = useState([]);
-  const { createDatabase } = useDatabase();
-  async function fetchVideos() {
-    try {
-      console.log("request sent");
-      console.log(process.env.NEXT_PUBLIC_BACKEND_URL);
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/allvideo`
-      );
-      const data = await response.json();
-      setVideos(data);
-      console.log(data);
-      return data;
-    } catch (error) {
-      console.error(error);
-    }
+async function fetchVideos() {
+  try {
+    console.log("request sent");
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/allvideo`
+    );
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
   }
-  useEffect(() => {
-    fetchVideos();
-  }, []);
+}
+export default async function Page() {
+  const videos = await fetchVideos();
+  console.log(videos);
 
   return (
     <>
@@ -57,7 +50,7 @@ export default function Page() {
                 views={"50000"}
                 timestamp={video1.timestamp}
                 channelImage={video1.channelImage}
-                timeDuration={video1.timeDuration}
+                timeDuration={video.duration}
               />
             </Link>
           ))}

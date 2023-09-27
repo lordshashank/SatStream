@@ -34,7 +34,7 @@ export default function Page() {
       <div className="container">
         <Sidebar />
         <div className={classes["your-videos-container"]}>
-          {videos.map((video) => (
+          {videos?.map((video) => (
             <UserVideoCard
               key={video.id}
               title={video.title}

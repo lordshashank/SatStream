@@ -39,11 +39,24 @@ const UploadFile = ({ onClose }) => {
     console.log("running upload file function");
     // Show the uploading text
     setUploadStatus("Uploading...");
+    // Create a video element to get the duration
+    const video = document.createElement("video");
+    video.src = URL.createObjectURL(file);
+
+    // Wait for the metadata to load
+    await new Promise((resolve) => {
+      video.addEventListener("loadedmetadata", resolve);
+    });
+
+    // Get the duration of the video in seconds
+    const duration = Math.round(video.duration);
+    console.log(duration);
 
     // Create FormData to send the file
     const formData = new FormData();
     formData.append("file", file);
     formData.append("address", userAccount);
+    formData.append("duration", duration);
     console.log(userAccount);
 
     // Send the file to the server to be uploaded to lighthouse
