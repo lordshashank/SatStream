@@ -1,25 +1,26 @@
 "use client";
 import { useParams } from "next/navigation";
-import Header from "@/components/Header";
+import classes from "@/styles/VideoPlayer.module.css";
 const Page = () => {
   const { videoCid } = useParams();
   const LIGHTHOUSE_DEAL_DOWNLOAD_ENDPOINT =
     "https://gateway.lighthouse.storage/ipfs/";
 
   return (
-    <>
-      <Header />
-      <div className="video-player-container">
-        <div className="video-player">
-          <video controls>
-            <source
-              src={`${LIGHTHOUSE_DEAL_DOWNLOAD_ENDPOINT}${videoCid}`}
-              type="video/mp4"
-            />
-          </video>
+    <div className={classes.backdrop} id="modal">
+      <div className={classes.modal}>
+        <div className={classes["video-player-container"]}>
+          <div className={classes["video-player"]}>
+            <video controls style={{ width: "100%", height: "100%" }}>
+              <source
+                src={`${LIGHTHOUSE_DEAL_DOWNLOAD_ENDPOINT}${videoCid}`}
+                type="video/mp4"
+              />
+            </video>
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

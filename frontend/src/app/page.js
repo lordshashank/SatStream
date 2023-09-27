@@ -31,13 +31,14 @@ async function fetchVideos() {
 }
 export default async function Page() {
   const videos = await fetchVideos();
+  console.log(videos);
 
   return (
     <>
       <Header />
       <div className={classes.container}>
         <main className={classes["videos-container"]}>
-          {videos.map((video) => (
+          {videos?.map((video) => (
             <Link href={`/video-player/${video.videocid}`}>
               <VideoCard
                 thumbnailCid={video.thumbnailcid}
@@ -46,7 +47,7 @@ export default async function Page() {
                 views={"50000"}
                 timestamp={video1.timestamp}
                 channelImage={video1.channelImage}
-                timeDuration={video1.timeDuration}
+                timeDuration={video.duration}
               />
             </Link>
           ))}
