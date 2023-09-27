@@ -1,0 +1,29 @@
+.sidebar {
+  flex: 2;
+  padding-top: 2rem;
+  border-right: 1px solid #ccc;
+  min-height: 100vh;
+}
+.nav-links-list {
+  display: flex;
+  flex-direction: column;
+}
+.nav-link {
+}
+.nav-link > a {
+  padding: 0.5rem 1rem;
+  display: block;
+  position: relative;
+}
+.nav-link > a.active {
+  background-color: #ccc;
+}
+.nav-link > a.active:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background-color: #f00;
+}

@@ -1,15 +1,55 @@
-import Header from "@/components/header";
+import VideoCard from "@/components/VideoCard";
+import Header from "@/components/Header";
 import classes from "@/styles/Page.module.css";
+import Link from "next/link";
 
-export default function Page() {
+const video1 = {
+  id: "2eliQ_KR8yA",
+  image:
+    "https://i.ytimg.com/vi/2eliQ_KR8yA/hq720.jpg?sqp=-oaymwEcCNAFEJQDSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLA6fW_hT1HcvbPTKBWYSOwB_pKK-w",
+  title:
+    "KHAAB || AKHIL || PARMISH VERMA || NEW PUNJABI SONG 2018 || CROWN RECORDS ||",
+  channel: "Crown Records",
+  views: "66 crore views",
+  timestamp: "6 years ago",
+  channelImage:
+    "https://yt3.ggpht.com/ytc/AMLnZu8TdgskFgONZuAfOBszVS6N2Xt5xs9_SWolFPRCrQ=s68-c-k-c0x00ffffff-no-rj",
+  timeDuration: "3:39",
+};
+
+async function fetchVideos() {
+  try {
+    console.log("request sent");
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/allvideo`
+    );
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+}
+export default async function Page() {
+  const videos = await fetchVideos();
+
   return (
     <>
       <Header />
       <div className={classes.container}>
-        <main className={classes.main}>
-          <h1 className={classes.title}>
-            Welcome to <a href="https://nextjs.org">Next.js!</a>
-          </h1>
+        <main className={classes["videos-container"]}>
+          {videos.map((video) => (
+            <Link href={`/video-player/${video.videocid}`}>
+              <VideoCard
+                thumbnailCid={video.thumbnailcid}
+                title={video.title}
+                channel={"crown records"}
+                views={"50000"}
+                timestamp={video1.timestamp}
+                channelImage={video1.channelImage}
+                timeDuration={video1.timeDuration}
+              />
+            </Link>
+          ))}
         </main>
       </div>
     </>

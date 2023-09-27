@@ -25,7 +25,9 @@ export default function Header() {
     // </div>
     <div className={classes["header"]}>
       <div className={classes["logo"]}>
-        <h2>SatStream</h2>
+        <Link href={"/"}>
+          <h2>SatStream</h2>
+        </Link>
       </div>
       <div className={classes["search-bar"]}>
         <input type="text" placeholder="Search" />
