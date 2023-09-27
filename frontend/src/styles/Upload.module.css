@@ -1,0 +1,29 @@
+.upload-container {
+  flex: 8;
+  text-align: center;
+  padding: 2rem 3rem;
+}
+.upload-container > h1 {
+  padding-bottom: 1rem;
+}
+.btn {
+  all: unset;
+  margin-top: 10rem;
+  padding: 0.5rem 1rem;
+  background-color: #065fd4;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.input-field {
+  margin-top: 10rem;
+}
+.input-field > input {
+  display: none;
+}
+.input-field > label {
+  padding: 0.5rem 1rem;
+  background-color: #065fd4;
+  color: #fff;
+  border-radius: 2px;
+}

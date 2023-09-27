@@ -1,0 +1,105 @@
+.below {
+  overflow-y: scroll;
+  display: flex;
+  gap: 2rem;
+}
+.input-area {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #aaa;
+  border-radius: 5px;
+  margin-bottom: 2rem;
+}
+.take-details {
+  padding: 2rem;
+  flex: 5;
+  overflow-y: scroll;
+}
+.take-details h2 {
+  padding-bottom: 2rem;
+  font-size: 20px;
+  font-weight: 500;
+}
+.input-area > label {
+  font-size: 12px;
+  font-weight: 300;
+}
+.input-area > textarea {
+  outline: none;
+  border: none;
+  padding: 0.5rem 1rem;
+}
+.input-area > textarea:focus {
+  border: none;
+  outline: none;
+}
+.input-area > textarea:focus .input-area {
+  border: 1px solid blue;
+}
+.thumbnail-section {
+  align-self: flex-start;
+}
+.thumbnail-section > p {
+  padding-bottom: 1rem;
+}
+.thumbnail-section .input-area {
+  width: fit-content;
+  display: block;
+  border: none;
+}
+.thumbnail-section .input-area > label {
+  border: 1px solid #aaa;
+  display: block;
+  padding: 1rem 1.5rem;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.video-details {
+  padding-right: 2rem;
+  flex: 3;
+  margin-top: 3rem;
+}
+.video-details > div > p:nth-child(1) {
+  font-size: 12px;
+  font-weight: 400;
+  padding-bottom: 0.5rem;
+}
+.video-details > div:nth-child(1) > p:nth-child(2) {
+  color: blue;
+}
+.video-details > div {
+  padding-bottom: 1rem;
+}
+.link {
+  color: blue;
+  word-break: break-all;
+}
+
+.top {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid #ccc;
+  z-index: 1000;
+  padding: 0.7rem 1.2rem;
+  background: #fff;
+}
+.btn {
+  all: unset;
+  padding: 0.5rem 1.5rem;
+  border-radius: 5px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  background-color: #065fd4;
+  color: #fff;
+}
+.btn:disabled {
+  background-color: #ccc;
+  color: #000;
+}

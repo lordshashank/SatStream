@@ -1,0 +1,112 @@
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 20;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  /* position: absolute;
+  top: 5vh;
+  left: 5%; */
+  width: 90%;
+  transform: translate();
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  z-index: 30;
+  animation: slide-down 300ms ease-out forwards;
+  max-height: 80%;
+  height: 80%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 2rem;
+}
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 0px;
+  color: #00000075;
+  cursor: pointer;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 0.5rem;
+  padding: 1rem;
+}
+.top > h2 {
+  font-size: 26px;
+  font-weight: 500;
+}
+.top > button {
+  all: unset;
+  cursor: pointer;
+}
+.input-field {
+  /* margin-top: 10rem; */
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  padding: 2rem;
+}
+.input-field > input {
+  display: none;
+}
+.icon-label {
+  padding: 1.5rem;
+  background-color: rgb(241, 241, 241);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.text > h6 {
+  font-size: 16px;
+  font-weight: 450;
+  padding-bottom: 0.5rem;
+}
+.text > p {
+  font-size: 12px;
+  font-weight: 400;
+}
+.input-field > label:nth-child(4) {
+  padding: 0.5rem 1rem;
+  background-color: #065fd4;
+  color: #fff;
+  border-radius: 2px;
+  cursor: pointer;
+}
+@media (height < 500px) {
+  .modal {
+    max-height: 100%;
+  }
+}
+@media (width > 600px) {
+  .modal {
+    max-width: 60rem;
+    left: calc(50% - 20rem);
+    top: 15vh;
+  }
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-3rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,5 +1,7 @@
 const express = require("express")
 const { ethers } = require("hardhat")
+const User = require("./models/user")
+const mongoose = require("mongoose")
 
 const { networkConfig } = require("../helper-hardhat-config")
 
@@ -17,37 +19,46 @@ const EdgeAggregator = require("./edgeAggregator.js")
 const LighthouseAggregator = require("./lighthouseAggregator.js")
 const upload = multer({ dest: "temp/" }) // Temporary directory for uploads
 
-let stateFilePath = "./cache/service_state.json"
-let storedNodeJobs
-let edgeAggregatorInstance
-let lighthouseAggregatorInstance
-let isDealCreationListenerActive = false
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*")
     res.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET, POST, PUT, PATCH, DELETE")
     res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization,AuthToken")
     next()
 })
-app.listen(port, () => {
-    if (!isDealCreationListenerActive) {
-        isDealCreationListenerActive = true
-        initializeDealCreationListener()
-        initializeDataRetrievalListener()
-        storedNodeJobs = loadJobsFromState()
-        edgeAggregatorInstance = new EdgeAggregator()
-        lighthouseAggregatorInstance = new LighthouseAggregator()
-    }
+mongoose.set("strictQuery", false)
+mongoose
+    .connect(process.env.MONGODB_URL)
+    .then((result) => {
+        app.listen(port, () => {
+            if (!isDealCreationListenerActive) {
+                isDealCreationListenerActive = true
+                initializeDealCreationListener()
+                initializeDataRetrievalListener()
+                storedNodeJobs = loadJobsFromState()
+                edgeAggregatorInstance = new EdgeAggregator()
+                lighthouseAggregatorInstance = new LighthouseAggregator()
+            }
 
-    console.log(`App started and is listening on port ${port}`)
-    console.log("Existing jobs on service node: ", storedNodeJobs)
+            console.log(`App started and is listening on port ${port}`)
+            console.log("Existing jobs on service node: ", storedNodeJobs)
 
-    setInterval(async () => {
-        console.log("Executing jobs")
-        await executeJobs()
-    }, 50000) // 43200000 = 12 hours
-})
+            setInterval(async () => {
+                console.log("Executing jobs")
+                await executeJobs()
+            }, 50000) // 43200000 = 12 hours
+        })
+    })
+    .catch((err) => {
+        console.log(err)
+    })
 
-app.use(express.urlencoded({ extended: true }))
+let stateFilePath = "./cache/service_state.json"
+let storedNodeJobs
+let edgeAggregatorInstance
+let lighthouseAggregatorInstance
+let isDealCreationListenerActive = false
 
 // Registers jobs for node to periodically execute jobs (every 12 hours)
 app.post("/api/register_job", upload.none(), async (req, res) => {
@@ -88,6 +99,21 @@ app.post("/api/register_job", upload.none(), async (req, res) => {
     return res.status(201).json({
         message: "Job registered successfully.",
     })
+})
+
+app.get("/api/uservideo/:walletaddress", async (req, res) => {
+    const { walletaddress } = req.params
+    try {
+        const userVideos = await User.findOne({ "user.walletaddress": walletaddress })
+        if (userVideos == null) res.status(404).json([])
+        else res.status(200).json(userVideos.videos)
+    } catch (err) {
+        console.log("getUserVideos " + err.message)
+        return res.status(400).send({
+            error: "Server Error!",
+            videos: [],
+        })
+    }
 })
 
 // Uploads a file to the aggregator if it hasn't already been uploaded
@@ -138,10 +164,126 @@ app.post("/api/uploadFile", upload.single("file"), async (req, res) => {
     console.log("Submitting job to aggregator contract with CID: ", newJob.cid)
     storedNodeJobs.push(newJob)
     saveJobsToState()
+    //
+    //
+    //
+    //
+    //
+    const walletaddress = req.body.address
+
+    const filename = req.file.originalname
+    try {
+        // Try to find the user by walletAddress
+        console.log(walletaddress)
+        const user = await User.findOne({ "user.walletaddress": walletaddress })
+        console.log(user)
+        if (user) {
+            // Check if the lighthouse_cid is different from the existing videos
+            const isLighthouseCidDifferent = !user.videos.some(
+                (video) => video.videocid === lighthouse_cid
+            )
+            console.log(isLighthouseCidDifferent)
+            if (isLighthouseCidDifferent) {
+                // Add the new video to the user's videos array
+                user.videos.push({
+                    videocid: lighthouse_cid,
+                    thumbnailcid: "",
+                    duration: "",
+                    title: "",
+                    description: "",
+                    created: new Date(),
+                    filename: filename,
+                })
+
+                // Save the updated user document
+                console.log(user)
+                await user.save()
+                console.log(`New video added for user with walletAddress ${walletaddress}.`)
+            } else {
+                console.log(
+                    `Video with videocid ${lighthouse_cid} already exists for user with walletAddress ${walletaddress}.`
+                )
+            }
+        } else {
+            // If the user doesn't exist, create a new user and add the video
+            console.log("new")
+            const newUser = new User({
+                "user.walletaddress": walletaddress,
+                videos: [
+                    {
+                        videocid: lighthouse_cid,
+                        thumbnailcid: "",
+                        duration: "",
+                        title: "",
+                        description: "",
+                        created: new Date(),
+                        filename: filename,
+                    },
+                ],
+            })
+
+            await newUser.save()
+            console.log(`New user with walletAddress ${walletaddress} and video added.`)
+        }
+    } catch (error) {
+        console.error(error)
+        // Handle any errors that may occur during the database operation
+    }
+    //
+    //
+    //
+    //
+    //
     return res.status(201).json({
         message: "Job registered successfully.",
         cid: lighthouse_cid,
     })
+})
+
+app.post("/api/publish", async (req, res) => {
+    try {
+        console.log(req.body)
+        const { video, user } = req.body
+        const { walletaddress } = user
+        const { videocid, thumbnailcid, title, description } = video
+
+        const updatedUser = await User.findOneAndUpdate(
+            { "user.walletaddress": walletaddress, "videos.videocid": videocid },
+            {
+                $set: {
+                    "videos.$.thumbnailcid": thumbnailcid,
+                    "videos.$.title": title,
+                    "videos.$.description": description,
+                },
+            },
+            { new: true }
+        )
+        res.status(200).json(updatedUser)
+    } catch (err) {
+        console.log("postApiPublish " + err.message)
+        return res.status(400).send({
+            error: "Server Error!",
+            videos: [],
+        })
+    }
+})
+
+app.get("/api/allvideo", async (req, res) => {
+    try {
+        const usersvideos = await User.find({}).select("videos")
+        console.log(usersvideos)
+        const allVideos = usersvideos.reduce((videosArray, user) => {
+            return videosArray.concat(user.videos)
+        }, [])
+        console.log(allVideos)
+        res.status(200).json(allVideos)
+    } catch (err) {
+        console.log("allVideos " + err.message)
+        return res.status(400).send({
+            error: "Server Error!",
+            videos: [],
+        })
+    }
 })
 
 // Queries the status of a deal with the provided CID

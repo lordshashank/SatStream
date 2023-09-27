@@ -1,0 +1,43 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 3rem;
+  padding: 0.7rem 2rem;
+  background-color: #f9f9f9;
+}
+
+.logo img {
+  height: 30px;
+}
+
+.search-bar {
+  display: flex;
+  flex-grow: 1;
+  flex-basis: 700px;
+  margin: 0 10px;
+}
+
+.search-bar input[type="text"] {
+  flex-grow: 1;
+  padding: 5px;
+  border: none;
+  border-radius: 3px;
+}
+
+.search-bar button[type="submit"] {
+  padding: 5px 10px;
+  background-color: #f00;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.upload-btn {
+  cursor: pointer;
+}
+.menu a {
+  margin: 0 10px;
+  text-decoration: none;
+  color: #333;
+}

@@ -1,4 +1,4 @@
-import { contractAddress, abi } from "../constants";
+import { contractAddress, abi } from "../../constants";
 import { useState, useEffect } from "react";
 import { useWeb3Contract } from "react-moralis";
 import useWeb3 from "./useWeb3";
