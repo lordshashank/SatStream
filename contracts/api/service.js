@@ -169,7 +169,9 @@ app.post("/api/uploadFile", upload.single("file"), async (req, res) => {
     //
     //
     //
-    const walletaddress = req.body.address
+    const { address: walletaddress, duration } = req.body
+    console.log(duration)
+    console.log(typeof duration)
 
     const filename = req.file.originalname
     try {
@@ -188,7 +190,7 @@ app.post("/api/uploadFile", upload.single("file"), async (req, res) => {
                 user.videos.push({
                     videocid: lighthouse_cid,
                     thumbnailcid: "",
-                    duration: "",
+                    duration: duration.toString(),
                     title: "",
                     description: "",
                     created: new Date(),
@@ -213,7 +215,7 @@ app.post("/api/uploadFile", upload.single("file"), async (req, res) => {
                     {
                         videocid: lighthouse_cid,
                         thumbnailcid: "",
-                        duration: "",
+                        duration: duration.toString(),
                         title: "",
                         description: "",
                         created: new Date(),

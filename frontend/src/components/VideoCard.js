@@ -11,6 +11,9 @@ const VideoCard = (props) => {
     channelImage,
     timeDuration,
   } = props;
+  console.log(timeDuration);
+  const minutes = Math.trunc(Number(timeDuration) / 60);
+  const seconds = Number(timeDuration) % 60;
   return (
     <div className={classes.videoCard}>
       <div className={classes.videoCard_imgBox}>
@@ -19,7 +22,7 @@ const VideoCard = (props) => {
           src={`https://ipfs.io/ipfs/${thumbnailCid}`}
           alt=""
         />
-        <p className={classes.imageTime}>{timeDuration}</p>
+        <p className={classes.imageTime}>{`${minutes}:${seconds}`}</p>
       </div>
 
       <div className={classes.videoCard_info}>
