@@ -29,7 +29,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/lordshashank/SatStream">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+    <img src="./frontend/public/SatStream.jpeg" alt="Logo" width="80" height="80">
   </a>
 
 <h3 align="center">project_title</h3>
@@ -58,15 +58,7 @@
         <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -77,8 +69,6 @@
 <!-- ABOUT THE PROJECT -->
 
 ## About The Project
-
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
 
 SatStream is a decentralized video streaming platform that allows users to upload, store, and stream videos. It is built on top of the Filecoin and saturn network and uses the Lighthouse storage protocol as aggregator for retaining the videos on filecoin network as per user requirements.
 We used tableland as database for storing video metadata and other user information. Using various stacks helped us made completely decentralized video streaming platform.
