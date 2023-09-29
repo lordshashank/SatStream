@@ -40,7 +40,7 @@
     <a href="https://github.com/lordshashank/SatStream"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/lordshashank/SatStream">View Demo</a>
+    <a href="https://www.youtube.com/watch?v=PwSz-0-I6qU">View Demo</a>
     ·
     <a href="https://github.com/lordshashank/SatStream/issues">Report Bug</a>
     ·
