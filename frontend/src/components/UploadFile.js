@@ -6,6 +6,7 @@ import { MdUpload } from "react-icons/md";
 import useWeb3 from "./useWeb3";
 import VideoDetails from "./VideoDetails";
 import useDealStatus from "./useDealStatus";
+import useDatabase from "./useDatabase";
 const UploadFile = ({ onClose }) => {
   const { userAccount } = useWeb3();
   const [isUploaded, setIsUploaded] = useState(false);
@@ -18,6 +19,20 @@ const UploadFile = ({ onClose }) => {
     thumbnail: "",
     video: "",
   });
+  const {
+    createDatabase,
+    writeInDatabase,
+    readDatabase,
+    getDatabases,
+    transferDatabase,
+  } = useDatabase();
+  async function createUserTable(title, videoCid, index) {
+    const prefix = "calib_80001_" + title;
+    const result = await createDatabase(prefix);
+    await writeInDatabase(prefix, index, videoCid);
+    console.log(result);
+  }
+
   const closeHandler = (e) => {
     if (e.target.id == "modal") {
       onClose();

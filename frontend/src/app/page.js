@@ -5,7 +5,8 @@ import classes from "@/styles/Page.module.css";
 import Link from "next/link";
 import useWeb3 from "@/components/useWeb3";
 import { useState, useEffect } from "react";
-import { useDatabase } from "../components/useDatabase";
+import useDealStatus from "@/components/useDealStatus";
+// import { useDatabase } from "../components/useDatabase";
 const video1 = {
   id: "2eliQ_KR8yA",
   image:
@@ -14,26 +15,33 @@ const video1 = {
     "KHAAB || AKHIL || PARMISH VERMA || NEW PUNJABI SONG 2018 || CROWN RECORDS ||",
   channel: "Crown Records",
   views: "66 crore views",
-  timestamp: "6 years ago",
+  timestamp: "1 hour ago",
   channelImage:
     "https://yt3.ggpht.com/ytc/AMLnZu8TdgskFgONZuAfOBszVS6N2Xt5xs9_SWolFPRCrQ=s68-c-k-c0x00ffffff-no-rj",
   timeDuration: "3:39",
 };
 
-async function fetchVideos() {
-  try {
-    console.log("request sent");
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/allvideo`
-    );
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error(error);
-  }
-}
-export default async function Page() {
-  const videos = await fetchVideos();
+export default function Page() {
+  // const { account, chainId, web3 } = useWeb3();
+  const [videos, setVideos] = useState([]);
+  const { submitCid } = useDealStatus();
+  useEffect(() => {
+    async function fetchVideos() {
+      try {
+        console.log("request sent");
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/allvideo`
+        );
+        const data = await response.json();
+        setVideos(data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    // console.log(account);
+    fetchVideos();
+  }, []);
+
   console.log(videos);
 
   return (
@@ -41,20 +49,26 @@ export default async function Page() {
       <Header />
       <div className={classes.container}>
         <main className={classes["videos-container"]}>
-          {videos?.map((video) => (
+          {videos.map((video) => (
             <Link href={`/video-player/${video.videocid}`}>
               <VideoCard
                 thumbnailCid={video.thumbnailcid}
                 title={video.title}
-                channel={"crown records"}
-                views={"50000"}
+                channel={"Testing"}
+                views={"1"}
                 timestamp={video1.timestamp}
                 channelImage={video1.channelImage}
                 timeDuration={video.duration}
               />
             </Link>
           ))}
-          <button onClick={createDatabase("satStream")}>Create Database</button>
+          {/* <button
+            onClick={() => {
+              submitCid("Qmem4exur6JCXTkJuc4XSYttEzFJg1U6RejgKrot7DNuCB");
+            }}
+          >
+            Create Database
+          </button> */}
         </main>
       </div>
     </>

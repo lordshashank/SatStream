@@ -5,11 +5,11 @@ import Header from "@/components/Header";
 import UserVideoCard from "@/components/UserVideoCard";
 import { useState, useEffect } from "react";
 import classes from "@/styles/YourVideos.module.css";
-
+import useDatabase from "@/components/useDatabase";
 export default function Page() {
   const { userAccount } = useWeb3();
   const [videos, setVideos] = useState([]);
-
+  const { readDatabase } = useDatabase();
   useEffect(() => {
     async function fetchVideos() {
       try {
@@ -19,6 +19,7 @@ export default function Page() {
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/uservideo/${walletaddress}`
         );
         const data = await response.json();
+        //await readDatabase(`calib_80001_${data.title}}`);
         setVideos(data);
       } catch (error) {
         console.error(error);
