@@ -58,6 +58,13 @@
         <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
+      <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
@@ -83,6 +90,40 @@ We used tableland as database for storing video metadata and other user informat
 - [Lighthouse]
 - [Tableland]
 - [Saturn]
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- GETTING STARTED -->
+
+## Getting Started
+
+This is an example of how you could set up our project locally, initializing backend is tough, you can initialize frontend only as well to get a feel of the project.
+
+### Prerequisites
+
+You would need yarn package manager installed on your system. You can go through the installation guide [here](https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable)
+
+### Installation
+
+1. Clone the repo
+   ```sh
+   git clone https://github.com/lordshashank/satStream.git
+   ```
+2. Set up the environment variables using various free api keys as stated in .env.example of both frontend and contracts folder.
+3. Initialize the backend
+   ```sh
+   cd contracts
+   yarn install
+   yarn hardhat compile
+   yarn service
+   ```
+4. Initialize the frontend
+   ```sh
+   cd ../frontend
+    yarn install
+    yarn run dev
+   ```
+5. Open the frontend on localhost:3000
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
