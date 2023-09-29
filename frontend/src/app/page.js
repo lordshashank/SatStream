@@ -3,38 +3,39 @@ import VideoCard from "@/components/VideoCard";
 import Header from "@/components/Header";
 import classes from "@/styles/Page.module.css";
 import Link from "next/link";
-import useWeb3 from "@/components/useWeb3";
 import { useState, useEffect } from "react";
-import { useDatabase } from "../components/useDatabase";
 const video1 = {
-  id: "2eliQ_KR8yA",
-  image:
-    "https://i.ytimg.com/vi/2eliQ_KR8yA/hq720.jpg?sqp=-oaymwEcCNAFEJQDSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLA6fW_hT1HcvbPTKBWYSOwB_pKK-w",
-  title:
-    "KHAAB || AKHIL || PARMISH VERMA || NEW PUNJABI SONG 2018 || CROWN RECORDS ||",
-  channel: "Crown Records",
-  views: "66 crore views",
-  timestamp: "",
+  videocid: "QmcaDyhLfunUx1x96wmBZLh4DWV4KCSoU8ywNuRusoHLvA",
+  thumbnailcid: "bafkreihe5bdoogw5qewimrgmnzf5obdwwogw2p4zf4pgt6mfyvqs6yf5ze",
+  duration: "165",
+  title: "Saibo",
+  description: "A song ok",
+  created: "2023-09-26T23:02:26.710+00:00",
+  filename: "Saibo.mp4",
+  _id: "65136302e7504d2518a26d04",
   channelImage:
     "https://yt3.ggpht.com/ytc/AMLnZu8TdgskFgONZuAfOBszVS6N2Xt5xs9_SWolFPRCrQ=s68-c-k-c0x00ffffff-no-rj",
-  timeDuration: "3:39",
 };
 
-async function fetchVideos() {
-  try {
-    console.log("request sent");
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/allvideo`
-    );
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error(error);
-  }
-}
 const views = ["3", "1", "1", "1", "1", "1", "1"];
-export default async function Page() {
-  const videos = await fetchVideos();
+export default function Page() {
+  const [videos, setVideos] = useState([video1]);
+
+  useEffect(() => {
+    async function fetchVideos() {
+      try {
+        console.log("request sent");
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/allvideo`
+        );
+        const data = await response.json();
+        setVideos(data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    if (process.env.NEXT_PUBLIC_BACKEND_URL) fetchVideos();
+  }, []);
 
   if (!videos) {
     return <div>Loading...</div>;
@@ -81,7 +82,10 @@ export default async function Page() {
                 : "") +
               " ago";
             return (
-              <Link href={`/video-player/${video.videocid}`}>
+              <Link
+                href={`/video-player/${video.videocid}`}
+                key={video.videocid}
+              >
                 <VideoCard
                   thumbnailCid={video.thumbnailcid}
                   title={video.title}
@@ -94,7 +98,6 @@ export default async function Page() {
               </Link>
             );
           })}
-          <button onClick={createDatabase("satStream")}>Create Database</button>
         </main>
       </div>
     </>
