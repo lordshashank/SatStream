@@ -1,8 +1,11 @@
+"use client";
 import VideoCard from "@/components/VideoCard";
 import Header from "@/components/Header";
 import classes from "@/styles/Page.module.css";
 import Link from "next/link";
-
+import useWeb3 from "@/components/useWeb3";
+import { useState, useEffect } from "react";
+import { useDatabase } from "../components/useDatabase";
 const video1 = {
   id: "2eliQ_KR8yA",
   image:
@@ -91,6 +94,7 @@ export default async function Page() {
               </Link>
             );
           })}
+          <button onClick={createDatabase("satStream")}>Create Database</button>
         </main>
       </div>
     </>

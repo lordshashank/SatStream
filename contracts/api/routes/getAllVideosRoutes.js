@@ -5,6 +5,7 @@ module.exports = getAllVideosRoutes = {
     path: "/allvideo",
     handler: async (req, res) => {
         try {
+            console.log("getAllVideosRoutes")
             const usersvideos = await User.find({}).select("videos")
             const allVideos = usersvideos.reduce((videosArray, user) => {
                 return videosArray.concat(user.videos)

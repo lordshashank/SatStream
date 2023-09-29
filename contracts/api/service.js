@@ -14,7 +14,9 @@ const sleep = require("util").promisify(setTimeout)
 
 const port = 1337
 const contractName = "DealStatus"
-const contractInstance = "0x6ec8722e6543fB5976a547434c8644b51e24785b" // The user will also input
+// const contractInstance = "0x6ec8722e6543fB5976a547434c8644b51e24785b" // The user will also input
+const contractInstance = "0xd425641552e3dab1cd97ba7a3b316e3a263b3ce2" // The user will also input
+
 const EdgeAggregator = require("./edgeAggregator.js")
 const LighthouseAggregator = require("./lighthouseAggregator.js")
 const upload = multer({ dest: "temp/" }) // Temporary directory for uploads
@@ -272,6 +274,7 @@ app.post("/api/publish", async (req, res) => {
 
 app.get("/api/allvideo", async (req, res) => {
     try {
+        console.log("allvideo")
         const usersvideos = await User.find({}).select("videos")
         console.log(usersvideos)
         const allVideos = usersvideos.reduce((videosArray, user) => {
