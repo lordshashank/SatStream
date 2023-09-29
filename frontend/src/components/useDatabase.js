@@ -22,9 +22,10 @@ export default function useDatabase() {
         .prepare(`CREATE TABLE ${prefix} (id integer primary key, name text);`)
         .run();
       // The table's `name` is in the format `{prefix}_{chainId}_{tableId}`
+      console.log("dd");
       console.log(create.txn.name); // e.g., my_sdk_table_80001_311
 
-      return `Table created with name: ${create.txn.name}`;
+      return create.txn.name;
     } catch (error) {
       console.log(error);
     }

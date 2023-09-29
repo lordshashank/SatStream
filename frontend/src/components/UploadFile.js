@@ -1,11 +1,12 @@
 "use client";
 import classes from "@/styles/UploadFile.module.css";
-import { AiOutlineClose, AiOutlineCloudUpload } from "react-icons/ai";
+import { AiOutlineClose } from "react-icons/ai";
 import { useState } from "react";
 import { MdUpload } from "react-icons/md";
 import useWeb3 from "./useWeb3";
 import VideoDetails from "./VideoDetails";
 import useDealStatus from "./useDealStatus";
+import useDatabase from "../components/useDatabase";
 const UploadFile = ({ onClose }) => {
   const { userAccount } = useWeb3();
   const [isUploaded, setIsUploaded] = useState(false);
@@ -14,6 +15,25 @@ const UploadFile = ({ onClose }) => {
   const [details, setDetails] = useState({ title: "", desc: "" });
   const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
   const { submitCid } = useDealStatus();
+
+  const { createDatabase, writeInDatabase, readDatabase } = useDatabase();
+  const [databaseName, setDatabaseName] = useState("");
+  const createDb = async () => {
+    const name = await createDatabase("sat");
+    console.log(name);
+    setDatabaseName(name);
+    // await writeInDatabase("sat", 1, "hello");
+    // await readDatabase("sat");
+  };
+
+  const writeDb = async (video) => {
+    const rs = await writeInDatabase(databaseName, 1, video);
+    console.log(rs);
+  };
+  const readDb = async () => {
+    const rs = await readDatabase(databaseName);
+    console.log(rs);
+  };
   const [cid, setCid] = useState({
     thumbnail: "",
     video: "",
@@ -25,6 +45,7 @@ const UploadFile = ({ onClose }) => {
   };
 
   async function handleFileChange(event) {
+    await createDb;
     console.log("handle file change");
     setFile(event.target.files[0]);
     if (userAccount) await uploadFile(event.target.files[0]);
@@ -87,14 +108,16 @@ const UploadFile = ({ onClose }) => {
   }
 
   const onPublish = async () => {
+    console.log(cid.video);
     await submitCid(cid.video);
+    const videoData = {
+      videocid: cid.video,
+      thumbnailcid: cid.thumbnail,
+      title: details.title,
+      description: details.desc,
+    };
     const data = {
-      video: {
-        videocid: cid.video,
-        thumbnailcid: cid.thumbnail,
-        title: details.title,
-        description: details.desc,
-      },
+      video: videoData,
       user: {
         walletaddress: userAccount,
       },
@@ -108,6 +131,8 @@ const UploadFile = ({ onClose }) => {
       body: JSON.stringify(data),
     });
     const responseJson = await response.json();
+    await writeDb(videoData);
+
     console.log("Uploaded file. Response: ", responseJson);
     onClose();
   };
