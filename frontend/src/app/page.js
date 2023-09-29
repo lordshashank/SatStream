@@ -11,7 +11,7 @@ const video1 = {
     "KHAAB || AKHIL || PARMISH VERMA || NEW PUNJABI SONG 2018 || CROWN RECORDS ||",
   channel: "Crown Records",
   views: "66 crore views",
-  timestamp: "6 years ago",
+  timestamp: "",
   channelImage:
     "https://yt3.ggpht.com/ytc/AMLnZu8TdgskFgONZuAfOBszVS6N2Xt5xs9_SWolFPRCrQ=s68-c-k-c0x00ffffff-no-rj",
   timeDuration: "3:39",
@@ -29,28 +29,68 @@ async function fetchVideos() {
     console.error(error);
   }
 }
+const views = ["3", "1", "1", "1", "1", "1", "1"];
 export default async function Page() {
   const videos = await fetchVideos();
-  console.log(videos);
+
+  if (!videos) {
+    return <div>Loading...</div>;
+  }
+
+  const timeUnits = [
+    { unit: "year", milliseconds: 365 * 24 * 60 * 60 * 1000 },
+    { unit: "month", milliseconds: 30 * 24 * 60 * 60 * 1000 },
+    { unit: "day", milliseconds: 24 * 60 * 60 * 1000 },
+    { unit: "hour", milliseconds: 60 * 60 * 1000 },
+    { unit: "minute", milliseconds: 60 * 1000 },
+    { unit: "second", milliseconds: 1000 },
+  ];
 
   return (
     <>
       <Header />
       <div className={classes.container}>
         <main className={classes["videos-container"]}>
-          {videos?.map((video) => (
-            <Link href={`/video-player/${video.videocid}`}>
-              <VideoCard
-                thumbnailCid={video.thumbnailcid}
-                title={video.title}
-                channel={"crown records"}
-                views={"50000"}
-                timestamp={video1.timestamp}
-                channelImage={video1.channelImage}
-                timeDuration={video.duration}
-              />
-            </Link>
-          ))}
+          {videos?.map((video, index) => {
+            const currentTime = new Date();
+            const videoCreationTime = new Date(video.created);
+            const timeDifferenceMilliseconds = currentTime - videoCreationTime;
+
+            let maxTimeUnit = timeUnits[timeUnits.length - 1];
+            for (let i = 0; i < timeUnits.length; i++) {
+              const timeUnit = timeUnits[i];
+              if (timeDifferenceMilliseconds >= timeUnit.milliseconds) {
+                maxTimeUnit = timeUnit;
+                break;
+              }
+            }
+
+            const timeDifference =
+              Math.round(
+                timeDifferenceMilliseconds / maxTimeUnit.milliseconds
+              ) +
+              " " +
+              maxTimeUnit.unit +
+              (Math.round(
+                timeDifferenceMilliseconds / maxTimeUnit.milliseconds
+              ) > 1
+                ? "s"
+                : "") +
+              " ago";
+            return (
+              <Link href={`/video-player/${video.videocid}`}>
+                <VideoCard
+                  thumbnailCid={video.thumbnailcid}
+                  title={video.title}
+                  channel={"Testing"}
+                  views={views[index]}
+                  timestamp={timeDifference}
+                  channelImage={video1.channelImage}
+                  timeDuration={video.duration}
+                />
+              </Link>
+            );
+          })}
         </main>
       </div>
     </>

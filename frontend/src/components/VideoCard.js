@@ -11,7 +11,6 @@ const VideoCard = (props) => {
     channelImage,
     timeDuration,
   } = props;
-  console.log(timeDuration);
   const minutes = Math.trunc(Number(timeDuration) / 60);
   const seconds = Number(timeDuration) % 60;
   return (

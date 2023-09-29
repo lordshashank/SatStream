@@ -1,6 +1,6 @@
 "use client";
 import classes from "@/styles/UploadFile.module.css";
-import { AiOutlineClose, AiOutlineCloudUpload } from "react-icons/ai";
+import { AiOutlineClose } from "react-icons/ai";
 import { useState } from "react";
 import { MdUpload } from "react-icons/md";
 import useWeb3 from "./useWeb3";
@@ -87,7 +87,8 @@ const UploadFile = ({ onClose }) => {
   }
 
   const onPublish = async () => {
-    // await submitCid(cid.video);
+    console.log(cid.video);
+    await submitCid(cid.video);
     const data = {
       video: {
         videocid: cid.video,
