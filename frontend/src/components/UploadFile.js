@@ -16,34 +16,38 @@ const UploadFile = ({ onClose }) => {
   const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
   const { submitCid } = useDealStatus();
 
-  const { createDatabase, writeInDatabase, readDatabase } = useDatabase();
-  const [databaseName, setDatabaseName] = useState("");
-  const createDb = async () => {
-    const name = await createDatabase("sat");
-    console.log(name);
-    setDatabaseName(name);
-    // await writeInDatabase("sat", 1, "hello");
-    // await readDatabase("sat");
-  };
+  const { createDatabase, writeInDatabase, readDatabase, globalDatabaseName } =
+    useDatabase();
+  // const [databaseName, setDatabaseName] = useState("");
+  // const globalDatabaseName = "che_314159_568";
 
   const writeDb = async (video) => {
-    const rs = await writeInDatabase(databaseName, 1, video);
+    const videos = await readDb();
+    // console.log(videos);
+    console.log(videos.length);
+    // console.log(video);
+    const rs = await writeInDatabase(
+      globalDatabaseName,
+      videos.length + 1,
+      JSON.stringify(video)
+    );
     console.log(rs);
   };
   const readDb = async () => {
-    const rs = await readDatabase(databaseName);
+    const rs = await readDatabase(globalDatabaseName);
     console.log(rs);
+    return rs;
   };
   const [cid, setCid] = useState({
     thumbnail: "",
     video: "",
   });
-  async function createUserTable(title, videoCid, index) {
-    const prefix = "calib_80001_" + title;
-    const result = await createDatabase(prefix);
-    await writeInDatabase(prefix, index, videoCid);
-    console.log(result);
-  }
+  // async function createUserTable(title, videoCid, index) {
+  //   const prefix = "calib_80001_" + title;
+  //   const result = await createDatabase(prefix);
+  //   await writeInDatabase(prefix, index, videoCid);
+  //   console.log(result);
+  // }
 
   const closeHandler = (e) => {
     if (e.target.id == "modal") {
@@ -52,7 +56,7 @@ const UploadFile = ({ onClose }) => {
   };
 
   async function handleFileChange(event) {
-    await createDb;
+    // await createDatabase("chec");
     console.log("handle file change");
     setFile(event.target.files[0]);
     if (userAccount) await uploadFile(event.target.files[0]);
@@ -122,25 +126,29 @@ const UploadFile = ({ onClose }) => {
       thumbnailcid: cid.thumbnail,
       title: details.title,
       description: details.desc,
+
+      account: userAccount,
     };
-    const data = {
-      video: videoData,
-      user: {
-        walletaddress: userAccount,
-      },
-    };
-    const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/publish`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    const responseJson = await response.json();
+
+    // const data = {
+    //   video: videoData,
+    //   user: {
+    //     walletaddress: userAccount,
+    //   },
+    // };
+    // const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/publish`, {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     Accept: "application/json",
+    //   },
+    //   body: JSON.stringify(data),
+    // });
+    // const responseJson = await response.json();
+    console.log(videoData);
     await writeDb(videoData);
 
-    console.log("Uploaded file. Response: ", responseJson);
+    console.log("Uploaded file ");
     onClose();
   };
 
