@@ -1,7 +1,6 @@
 const express = require("express")
 const { ethers } = require("hardhat")
 const User = require("./models/user")
-const mongoose = require("mongoose")
 
 const { networkConfig } = require("../helper-hardhat-config")
 
@@ -29,32 +28,24 @@ app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization,AuthToken")
     next()
 })
-mongoose.set("strictQuery", false)
-mongoose
-    .connect(process.env.MONGODB_URL)
-    .then((result) => {
-        app.listen(port, () => {
-            if (!isDealCreationListenerActive) {
-                isDealCreationListenerActive = true
-                initializeDealCreationListener()
-                initializeDataRetrievalListener()
-                storedNodeJobs = loadJobsFromState()
-                edgeAggregatorInstance = new EdgeAggregator()
-                lighthouseAggregatorInstance = new LighthouseAggregator()
-            }
+app.listen(port, () => {
+    if (!isDealCreationListenerActive) {
+        isDealCreationListenerActive = true
+        initializeDealCreationListener()
+        initializeDataRetrievalListener()
+        storedNodeJobs = loadJobsFromState()
+        edgeAggregatorInstance = new EdgeAggregator()
+        lighthouseAggregatorInstance = new LighthouseAggregator()
+    }
 
-            console.log(`App started and is listening on port ${port}`)
-            console.log("Existing jobs on service node: ", storedNodeJobs)
+    console.log(`App started and is listening on port ${port}`)
+    console.log("Existing jobs on service node: ", storedNodeJobs)
 
-            setInterval(async () => {
-                console.log("Executing jobs")
-                await executeJobs()
-            }, 50000) // 43200000 = 12 hours
-        })
-    })
-    .catch((err) => {
-        console.log(err)
-    })
+    setInterval(async () => {
+        console.log("Executing jobs")
+        await executeJobs()
+    }, 50000) // 43200000 = 12 hours
+})
 
 let stateFilePath = "./cache/service_state.json"
 let storedNodeJobs
@@ -166,130 +157,58 @@ app.post("/api/uploadFile", upload.single("file"), async (req, res) => {
     console.log("Submitting job to aggregator contract with CID: ", newJob.cid)
     storedNodeJobs.push(newJob)
     saveJobsToState()
-    //
-    //
-    //
-    //
-    //
-    const { address: walletaddress, duration } = req.body
-    console.log(duration)
-    console.log(typeof duration)
-
-    const filename = req.file.originalname
-    try {
-        // Try to find the user by walletAddress
-        console.log(walletaddress)
-        const user = await User.findOne({ "user.walletaddress": walletaddress })
-        console.log(user)
-        if (user) {
-            // Check if the lighthouse_cid is different from the existing videos
-            const isLighthouseCidDifferent = !user.videos.some(
-                (video) => video.videocid === lighthouse_cid
-            )
-            console.log(isLighthouseCidDifferent)
-            if (isLighthouseCidDifferent) {
-                // Add the new video to the user's videos array
-                user.videos.push({
-                    videocid: lighthouse_cid,
-                    thumbnailcid: "",
-                    duration: duration.toString(),
-                    title: "",
-                    description: "",
-                    created: new Date(),
-                    filename: filename,
-                })
-
-                // Save the updated user document
-                console.log(user)
-                await user.save()
-                console.log(`New video added for user with walletAddress ${walletaddress}.`)
-            } else {
-                console.log(
-                    `Video with videocid ${lighthouse_cid} already exists for user with walletAddress ${walletaddress}.`
-                )
-            }
-        } else {
-            // If the user doesn't exist, create a new user and add the video
-            console.log("new")
-            const newUser = new User({
-                "user.walletaddress": walletaddress,
-                videos: [
-                    {
-                        videocid: lighthouse_cid,
-                        thumbnailcid: "",
-                        duration: duration.toString(),
-                        title: "",
-                        description: "",
-                        created: new Date(),
-                        filename: filename,
-                    },
-                ],
-            })
-
-            await newUser.save()
-            console.log(`New user with walletAddress ${walletaddress} and video added.`)
-        }
-    } catch (error) {
-        console.error(error)
-        // Handle any errors that may occur during the database operation
-    }
-    //
-    //
-    //
-    //
-    //
     return res.status(201).json({
         message: "Job registered successfully.",
         cid: lighthouse_cid,
     })
 })
 
-app.post("/api/publish", async (req, res) => {
-    try {
-        console.log(req.body)
-        const { video, user } = req.body
-        const { walletaddress } = user
-        const { videocid, thumbnailcid, title, description } = video
+// app.post("/api/publish", async (req, res) => {
+//     try {
+//         console.log(req.body)
+//         const { video, user } = req.body
+//         const { walletaddress } = user
+//         const { videocid, thumbnailcid, title, description } = video
 
-        const updatedUser = await User.findOneAndUpdate(
-            { "user.walletaddress": walletaddress, "videos.videocid": videocid },
-            {
-                $set: {
-                    "videos.$.thumbnailcid": thumbnailcid,
-                    "videos.$.title": title,
-                    "videos.$.description": description,
-                },
-            },
-            { new: true }
-        )
-        res.status(200).json(updatedUser)
-    } catch (err) {
-        console.log("postApiPublish " + err.message)
-        return res.status(400).send({
-            error: "Server Error!",
-            videos: [],
-        })
-    }
-})
+//         const updatedUser = await User.findOneAndUpdate(
+//             { "user.walletaddress": walletaddress, "videos.videocid": videocid },
+//             {
+//                 $set: {
+//                     "videos.$.thumbnailcid": thumbnailcid,
+//                     "videos.$.title": title,
+//                     "videos.$.description": description,
+//                 },
+//             },
+//             { new: true }
+//         )
+//         res.status(200).json(updatedUser)
+//     } catch (err) {
+//         console.log("postApiPublish " + err.message)
+//         return res.status(400).send({
+//             error: "Server Error!",
+//             videos: [],
+//         })
+//     }
+// })
 
-app.get("/api/allvideo", async (req, res) => {
-    try {
-        console.log("allvideo")
-        const usersvideos = await User.find({}).select("videos")
-        console.log(usersvideos)
-        const allVideos = usersvideos.reduce((videosArray, user) => {
-            return videosArray.concat(user.videos)
-        }, [])
-        console.log(allVideos)
-        res.status(200).json(allVideos)
-    } catch (err) {
-        console.log("allVideos " + err.message)
-        return res.status(400).send({
-            error: "Server Error!",
-            videos: [],
-        })
-    }
-})
+// app.get("/api/allvideo", async (req, res) => {
+//     try {
+//         console.log("allvideo")
+//         const usersvideos = await User.find({}).select("videos")
+//         console.log(usersvideos)
+//         const allVideos = usersvideos.reduce((videosArray, user) => {
+//             return videosArray.concat(user.videos)
+//         }, [])
+//         console.log(allVideos)
+//         res.status(200).json(allVideos)
+//     } catch (err) {
+//         console.log("allVideos " + err.message)
+//         return res.status(400).send({
+//             error: "Server Error!",
+//             videos: [],
+//         })
+//     }
+// })
 
 // Queries the status of a deal with the provided CID
 app.get("/api/deal_status", async (req, res) => {
