@@ -2,15 +2,8 @@ import classes from "@/styles/VideoCard.module.css";
 import Avatar from "./Avatar";
 
 const VideoCard = (props) => {
-  const {
-    thumbnailCid,
-    title,
-    channel,
-    views,
-    timestamp,
-    channelImage,
-    timeDuration,
-  } = props;
+  const { thumbnailCid, title, channel, views, timestamp, timeDuration } =
+    props;
   const minutes = Math.trunc(Number(timeDuration) / 60);
   const seconds = Number(timeDuration) % 60;
   return (
@@ -26,7 +19,7 @@ const VideoCard = (props) => {
 
       <div className={classes.videoCard_info}>
         <Avatar
-          src={channelImage}
+          src={"/SatStream.jpeg"}
           alt={channel}
           className={classes.videoCard_avatar}
         />

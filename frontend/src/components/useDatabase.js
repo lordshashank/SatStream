@@ -9,6 +9,7 @@ export default function useDatabase() {
   //   const { getContractReceipt } = helpers;
   // calib_80001_6978
   //calib_314159_193
+  const globalDatabaseName = "SatStream_314159_570";
   async function getHealthCheck() {
     const tableName = "healthbot_80001_1"; // Our pre-defined health check table
 
@@ -91,5 +92,6 @@ export default function useDatabase() {
     readDatabase,
     getDatabases,
     transferDatabase,
+    globalDatabaseName,
   };
 }

@@ -9,21 +9,26 @@ import useDatabase from "@/components/useDatabase";
 export default function Page() {
   const { userAccount } = useWeb3();
   const [videos, setVideos] = useState([]);
-  const { readDatabase } = useDatabase();
+  const { readDatabase, globalDatabaseName } = useDatabase();
   useEffect(() => {
     async function fetchVideos() {
-      try {
-        console.log("request sent");
-        const walletaddress = userAccount;
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/uservideo/${walletaddress}`
-        );
-        const data = await response.json();
-        //await readDatabase(`calib_80001_${data.title}}`);
-        setVideos(data);
-      } catch (error) {
-        console.error(error);
-      }
+      // try {
+      //   console.log("request sent");
+      //   const walletaddress = userAccount;
+      //   const response = await fetch(
+      //     `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/uservideo/${walletaddress}`
+      //   );
+      //   const data = await response.json();
+      //   //await readDatabase(`calib_80001_${data.title}}`);
+      //   setVideos(data);
+      // } catch (error) {
+      //   console.error(error);
+      // }
+      const videos = await readDatabase(globalDatabaseName);
+      const filteredVideos = videos.filter(
+        (video) => video.name.account === userAccount
+      );
+      setVideos(filteredVideos);
     }
     if (userAccount) fetchVideos();
   }, [userAccount]);
@@ -35,15 +40,18 @@ export default function Page() {
       <div className="container">
         <Sidebar />
         <div className={classes["your-videos-container"]}>
-          {videos?.map((video) => (
-            <UserVideoCard
-              key={video.id}
-              title={video.title}
-              description={video.description}
-              videoCid={video.videocid}
-              thumbnailCid={video.thumbnailcid}
-            />
-          ))}
+          {videos?.map((videoArray) => {
+            const { name: video } = videoArray;
+            return (
+              <UserVideoCard
+                key={video.id}
+                title={video.title}
+                description={video.description}
+                videoCid={video.videocid}
+                thumbnailCid={video.thumbnailcid}
+              />
+            );
+          })}
         </div>
       </div>
     </div>
