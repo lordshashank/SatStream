@@ -3,20 +3,23 @@ require("dotenv").config()
 const apiKey = process.env.NFT_STORAGE_TOKEN
 const fs = require("fs")
 const path = require("path")
-const hlsFilePath = "/Users/Loser/Hackathons/odh/SatStream1/contracts/output/"
+const hlsFilePath = "./output"
 async function uploadDirectory(directoryPath) {
     const files = await fs.promises.readdir(directoryPath)
+
+    console.log(files)
 
     const blobs = await Promise.all(
         files.map(async (file, index) => {
             console.log(index)
             const filePath = path.join(directoryPath, file)
             const fileData = await fs.promises.readFile(filePath)
-            const blob = new Blob([fileData], { type: "application/octet-stream" })
+            const blob = new File([fileData], file, { type: "application/octet-stream" })
             return blob
         })
     )
 
+    console.log(blobs)
     const client = new NFTStorage({ token: apiKey })
     let cid
     if (blobs) {

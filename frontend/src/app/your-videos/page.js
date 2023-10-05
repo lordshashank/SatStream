@@ -12,18 +12,6 @@ export default function Page() {
   const { readDatabase, globalDatabaseName } = useDatabase();
   useEffect(() => {
     async function fetchVideos() {
-      // try {
-      //   console.log("request sent");
-      //   const walletaddress = userAccount;
-      //   const response = await fetch(
-      //     `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/uservideo/${walletaddress}`
-      //   );
-      //   const data = await response.json();
-      //   //await readDatabase(`calib_80001_${data.title}}`);
-      //   setVideos(data);
-      // } catch (error) {
-      //   console.error(error);
-      // }
       const videos = await readDatabase(globalDatabaseName);
       const filteredVideos = videos.filter(
         (video) => video.name.account === userAccount
@@ -33,6 +21,8 @@ export default function Page() {
     if (userAccount) fetchVideos();
   }, [userAccount]);
   console.log(videos);
+
+  if (!userAccount) return <h1>Connect to Wallet to watch your uploads.</h1>;
   return (
     <div className={"page"}>
       <Header />
@@ -40,18 +30,24 @@ export default function Page() {
       <div className="container">
         <Sidebar />
         <div className={classes["your-videos-container"]}>
-          {videos?.map((videoArray) => {
-            const { name: video } = videoArray;
-            return (
-              <UserVideoCard
-                key={video.id}
-                title={video.title}
-                description={video.description}
-                videoCid={video.videocid}
-                thumbnailCid={video.thumbnailcid}
-              />
-            );
-          })}
+          {!userAccount ? (
+            <h1>Connect to Wallet to watch your uploads.</h1>
+          ) : videos.length > 0 ? (
+            videos.map((videoArray, index) => {
+              const { name: video } = videoArray;
+              return (
+                <UserVideoCard
+                  key={video?.id || index}
+                  title={video?.title}
+                  description={video?.description}
+                  videoCid={video?.videocid}
+                  thumbnailCid={video?.thumbnailcid}
+                />
+              );
+            })
+          ) : (
+            <h1>You don't have any uploads</h1>
+          )}
         </div>
       </div>
     </div>

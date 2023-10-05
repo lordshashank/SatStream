@@ -128,31 +128,8 @@ app.post(
         const videoPath = req.files["video"][0].path
         const thumbnailPath = req.files["thumbnail"][0].path
         console.log(videoPath, thumbnailPath)
-        // console.log(filePath)
-        // const filename = req.file.originalname
+
         let lighthouse_cid
-        // // Convert input file to HLS format
-        // const outputDir = "./output"
-        // const playlistName = `${filename}.m3u8`
-        // const hlsFilePath = path.join(outputDir, playlistName)
-        // setTimeout(async () => {
-        //     await new Promise((resolve, reject) => {
-        //         ffmpeg(filePath)
-        //             .addOptions([
-        //                 "-profile:v baseline",
-        //                 "-level 3.0",
-        //                 "-start_number 0",
-        //                 "-hls_time 6",
-        //                 "-hls_list_size 0",
-        //                 "-f hls",
-        //                 "-report",
-        //             ])
-        //             .output(hlsFilePath)
-        //             .on("end", resolve)
-        //             .on("error", reject)
-        //             .run()
-        //     })
-        // }, 2000)
 
         function convertToHLS(inputPath, outputPath, segmentLength = 10) {
             return new Promise((resolve, reject) => {
@@ -176,9 +153,9 @@ app.post(
 
         // Example usage:
         const inputFilePath = videoPath
-        const outputDirectory = "/Users/Loser/Hackathons/odh/SatStream1/contracts/output/"
+        const outputDirectory = "./output/"
         const outputPlaylistName = "output.m3u8"
-        const hlsFilePath = "/Users/Loser/Hackathons/odh/SatStream1/contracts/output"
+        const hlsFilePath = "./output"
 
         const thumbnailCid = await uploadFile(thumbnailPath)
 
@@ -226,12 +203,12 @@ app.post(
                 }
 
                 console.log("Submitting job to aggregator contract with CID: ", newJob.cid)
-                // storedNodeJobs.push(newJob)
-                // saveJobsToState()
+                storedNodeJobs.push(newJob)
+                saveJobsToState()
                 const cid = await uploadDirectory(hlsFilePath)
                 return res.status(201).json({
                     message: "Job registered successfully.",
-                    cid: { video: cid, thumbnail: thumbnailCid },
+                    cid: { video: cid, thumbnail: thumbnailCid, lighthouse: lighthouse_cid },
                 })
             })
             .catch((error) => {
@@ -665,7 +642,7 @@ async function uploadDirectory(directoryPath) {
         files.map(async (file) => {
             const filePath = path.join(directoryPath, file)
             const fileData = await fs.promises.readFile(filePath)
-            const blob = new Blob([fileData], { type: "application/octet-stream" })
+            const blob = new File([fileData], { type: "application/octet-stream" })
             return blob
         })
     )
