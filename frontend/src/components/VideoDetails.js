@@ -5,10 +5,9 @@ import Link from "next/link";
 const VideoDetails = ({
   videoCid,
   setDetails,
-  setCid,
   onPublish,
-  cid,
   file,
+  setThumbnail = { setThumbnail },
 }) => {
   const onChangeHandler = (name) => (event) => {
     setDetails((prev) => ({ ...prev, [name]: event.target.value }));
@@ -16,19 +15,19 @@ const VideoDetails = ({
   const NFT_STORAGE_TOKEN = process.env.NEXT_PUBLIC_NFT_STORAGE_TOKEN;
   const client = new NFTStorage({ token: NFT_STORAGE_TOKEN });
   const handleThumbnailChange = async (event) => {
-    await upload(event.target.files[0]);
+    setThumbnail(event.target.files[0]);
   };
 
-  async function upload(file) {
-    if (!file) {
-      console.log("No file selected");
-      return;
-    }
+  // async function upload(file) {
+  //   if (!file) {
+  //     console.log("No file selected");
+  //     return;
+  //   }
 
-    const cids = await client.storeBlob(file);
-    console.log(cids);
-    setCid((prev) => ({ ...prev, thumbnail: cids }));
-  }
+  //   const cids = await client.storeBlob(file);
+  //   console.log(cids);
+  //   setCid((prev) => ({ ...prev, thumbnail: cids }));
+  // }
   return (
     <>
       <div className={classes.below}>
@@ -72,12 +71,6 @@ const VideoDetails = ({
                 onChange={handleThumbnailChange}
               />
             </div>
-            {cid.thumbnail.length > 0 && (
-              <>
-                <p>Thumbnail CID</p>
-                <h6>{cid.thumbnail}</h6>
-              </>
-            )}
           </div>
         </div>
         <div className={classes["video-details"]}>

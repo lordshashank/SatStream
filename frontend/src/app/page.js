@@ -94,7 +94,7 @@ export default function Page() {
           {videos?.map((videoArray, index) => {
             const { name: video } = videoArray;
             const currentTime = new Date();
-            const videoCreationTime = new Date(video.created["$date"]);
+            const videoCreationTime = new Date(video.created);
             const timeDifferenceMilliseconds = currentTime - videoCreationTime;
 
             let maxTimeUnit = timeUnits[timeUnits.length - 1];
@@ -135,7 +135,7 @@ export default function Page() {
             );
           })}
         </main>
-        {/* <button
+        <button
           onClick={async () => {
             console.log(await createDatabase("SatStream"));
           }}
@@ -155,7 +155,7 @@ export default function Page() {
           }}
         >
           read Database
-        </button> */}
+        </button>
       </div>
     </>
   );

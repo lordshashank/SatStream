@@ -11,7 +11,9 @@ const UploadFile = ({ onClose }) => {
   const { userAccount } = useWeb3();
   const [isUploaded, setIsUploaded] = useState(false);
   const [uploadStatus, setUploadStatus] = useState(null);
-  const [file, setFile] = useState(null);
+  const [duration, setDuration] = useState("");
+  const [video, setVideo] = useState(null);
+  const [thumbnail, setThumbnail] = useState(null);
   const [details, setDetails] = useState({ title: "", desc: "" });
   const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
   const { submitCid } = useDealStatus();
@@ -38,10 +40,7 @@ const UploadFile = ({ onClose }) => {
     console.log(rs);
     return rs;
   };
-  const [cid, setCid] = useState({
-    thumbnail: "",
-    video: "",
-  });
+
   // async function createUserTable(title, videoCid, index) {
   //   const prefix = "calib_80001_" + title;
   //   const result = await createDatabase(prefix);
@@ -58,7 +57,8 @@ const UploadFile = ({ onClose }) => {
   async function handleFileChange(event) {
     // await createDatabase("chec");
     console.log("handle file change");
-    setFile(event.target.files[0]);
+    setVideo(event.target.files[0]);
+    setIsUploaded(true);
     // if (userAccount) await uploadFile(event.target.files[0]);
     // else return;
   }
@@ -82,7 +82,7 @@ const UploadFile = ({ onClose }) => {
 
     // Get the duration of the video in seconds
     const duration = Math.round(video.duration);
-    console.log(duration);
+    setDuration(duration);
 
     // Create FormData to send the file
     const formData = new FormData();
@@ -119,17 +119,32 @@ const UploadFile = ({ onClose }) => {
   }
 
   const onPublish = async () => {
-    console.log(cid.video);
-    await submitCid(cid.video);
+    if (thumbnail == null || video == null) return;
+    const formData = new FormData();
+    formData.append("video", video);
+    formData.append("thumbnail", thumbnail);
+    const uploadResponse = await fetch(
+      `${NEXT_PUBLIC_BACKEND_URL}/api/uploadFile`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+    const cids = await uploadResponse.json();
+    console.log(cids);
+    // await submitCid(cid.video);
     const videoData = {
-      videocid: cid.video,
-      thumbnailcid: cid.thumbnail,
+      videocid: cids.cid.video,
+      duration: duration,
+      created: new Date(),
+      thumbnailcid: cids.cid.thumbnail,
+
       title: details.title,
       description: details.desc,
 
       account: userAccount,
     };
-
+    console.log(videoData);
     // const data = {
     //   video: videoData,
     //   user: {
@@ -145,18 +160,18 @@ const UploadFile = ({ onClose }) => {
     //   body: JSON.stringify(data),
     // });
     // const responseJson = await response.json();
-    console.log(videoData);
-    await writeDb(videoData);
+    // console.log(videoData);
+    // await writeDb(videoData);
 
-    console.log("Uploaded file ");
-    onClose();
+    // console.log("Uploaded file ");
+    // onClose();
   };
 
   return (
     <div className={classes.backdrop} id="modal" onClick={closeHandler}>
       <div className={classes.modal}>
         <div className={classes.top}>
-          <h2>{isUploaded ? file.name : "Upload File"}</h2>
+          <h2>{isUploaded ? video.name : "Upload File"}</h2>
           <button onClick={onClose}>
             <AiOutlineClose size={30} />
           </button>
@@ -175,12 +190,10 @@ const UploadFile = ({ onClose }) => {
           </div>
         ) : (
           <VideoDetails
-            videoCid={cid.video}
             setDetails={setDetails}
-            setCid={setCid}
             onPublish={onPublish}
-            cid={cid}
-            file={file}
+            file={video}
+            setThumbnail={setThumbnail}
           />
         )}
       </div>
