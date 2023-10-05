@@ -12,10 +12,17 @@ const Page = () => {
       <div className={classes.modal}>
         <div className={classes["video-player-container"]}>
           <div className={classes["video-player"]}>
-            <video controls style={{ width: "100%", height: "100%" }}>
+            <video
+              id="bunny-video"
+              className="video-js vjs-16-9"
+              data-setup="{}"
+              controls
+            >
               <source
-                src={`${LIGHTHOUSE_DEAL_DOWNLOAD_ENDPOINT}${videoCid}`}
-                type="video/mp4"
+                src={
+                  "/ipfs/QmS29VtmK7Ax6TMmMwbwqtuKSGRJTLJAmHMW83qGvBBxhV/output.m3u8"
+                }
+                type="application/x-mpegURL"
               />
             </video>
           </div>

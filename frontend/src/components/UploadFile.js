@@ -59,8 +59,8 @@ const UploadFile = ({ onClose }) => {
     // await createDatabase("chec");
     console.log("handle file change");
     setFile(event.target.files[0]);
-    if (userAccount) await uploadFile(event.target.files[0]);
-    else return;
+    // if (userAccount) await uploadFile(event.target.files[0]);
+    // else return;
   }
   async function uploadFile(file) {
     // Check if a file was selected
