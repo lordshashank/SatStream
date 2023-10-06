@@ -11,7 +11,7 @@ const Sidebar = () => {
     <div className={classes.sidebar}>
       <ul className={classes["nav-links-list"]}>
         <li className={classes["nav-link"]}>
-          <Link className={activeClassName("/dashboard")} href={"/"}>
+          <Link className={activeClassName("/dashboard")} href={"/dashboard"}>
             Dashboard
           </Link>
         </li>

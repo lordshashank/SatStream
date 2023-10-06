@@ -1,34 +1,22 @@
 import classes from "@/styles/VideoDetails.module.css";
+
 import { AiOutlineFileImage } from "react-icons/ai";
-import { NFTStorage } from "nft.storage";
-import Link from "next/link";
 const VideoDetails = ({
-  videoCid,
   setDetails,
-  setCid,
   onPublish,
-  cid,
   file,
+  setThumbnail,
+  publishDisabled,
+  isLoading,
 }) => {
   const onChangeHandler = (name) => (event) => {
     setDetails((prev) => ({ ...prev, [name]: event.target.value }));
   };
-  const NFT_STORAGE_TOKEN = process.env.NEXT_PUBLIC_NFT_STORAGE_TOKEN;
-  const client = new NFTStorage({ token: NFT_STORAGE_TOKEN });
+
   const handleThumbnailChange = async (event) => {
-    await upload(event.target.files[0]);
+    setThumbnail(event.target.files[0]);
   };
 
-  async function upload(file) {
-    if (!file) {
-      console.log("No file selected");
-      return;
-    }
-
-    const cids = await client.storeBlob(file);
-    console.log(cids);
-    setCid((prev) => ({ ...prev, thumbnail: cids }));
-  }
   return (
     <>
       <div className={classes.below}>
@@ -72,17 +60,11 @@ const VideoDetails = ({
                 onChange={handleThumbnailChange}
               />
             </div>
-            {cid.thumbnail.length > 0 && (
-              <>
-                <p>Thumbnail CID</p>
-                <h6>{cid.thumbnail}</h6>
-              </>
-            )}
           </div>
         </div>
         <div className={classes["video-details"]}>
           {/* <iframe src={`"https://ipfs.io/ipfs/${videoCid}"`} /> */}
-          <div>
+          {/* <div>
             <p>Video Link</p>
             <Link
               className={classes.link}
@@ -90,7 +72,7 @@ const VideoDetails = ({
             >
               https://gateway.lighthouse.storage/ipfs/{videoCid}
             </Link>
-          </div>
+          </div> */}
           <div>
             <p>FileName</p>
             <p>{file?.name}</p>
@@ -98,8 +80,12 @@ const VideoDetails = ({
         </div>
       </div>
       <div className={classes.top}>
-        <button onClick={onPublish} className={classes.btn}>
-          Publish
+        <button
+          onClick={onPublish}
+          className={classes.btn}
+          disabled={publishDisabled}
+        >
+          {isLoading ? <div className="spin"></div> : "Publish"}
         </button>
       </div>
     </>

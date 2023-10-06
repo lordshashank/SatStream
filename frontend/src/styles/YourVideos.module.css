@@ -23,6 +23,7 @@
   justify-content: flex-start;
   align-content: flex-start;
   gap: 2rem;
+  margin-top: 2rem;
 }
 
 @media (max-width: 768px) {

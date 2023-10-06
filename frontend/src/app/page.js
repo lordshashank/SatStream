@@ -10,36 +10,57 @@ import useWeb3 from "@/components/useWeb3";
 const video1 = {
   id: 0,
   name: {
-    videocid: "QmcaDyhLfunUx1x96wmBZLh4DWV4KCSoU8ywNuRusoHLvA",
-    thumbnailcid: "bafkreihe5bdoogw5qewimrgmnzf5obdwwogw2p4zf4pgt6mfyvqs6yf5ze",
-    duration: "165",
-    title: "Saibo",
-    description: "A song ok",
+    videocid: "bafybeibiihqbyyd6jtu56jy5x2pqr6mmoxufx6oiayxywlfokyxeos7zyy",
+    thumbnailcid: "bafybeid64qxgt3hy533uspw6epeno62zxxvpbevno4z3yb4vhkrdh7373i",
+    duration: "29",
+    title: "Nature",
+    description: "Test",
     created: "2023-09-26T23:02:26.710+00:00",
-    filename: "Saibo.mp4",
+    filename: "nature.mp4",
     _id: "65136302e7504d2518a26d04",
     channelImage: "/SatStream.jpeg",
   },
 };
 
-const views = ["3", "1", "1", "1", "1", "1", "1"];
+const views = [
+  "3",
+  "1",
+  "1",
+  "1",
+  "1",
+  "1",
+  "1",
+  "3",
+  "1",
+  "1",
+  "1",
+  "1",
+  "1",
+  "1",
+  "3",
+  "1",
+  "1",
+  "1",
+  "1",
+  "1",
+  "1",
+];
 export default function Page() {
   const [videos, setVideos] = useState([video1]);
+  const [playVideo, setPlayVideo] = useState({ isPlay: false, cid: "" });
   const {
     createDatabase,
     writeInDatabase,
     readDatabase,
     globalDatabaseName: databaseName,
   } = useDatabase();
-  // const [databaseName, setDatabaseName] = useState("SatStream_314159_569");
   const { userAccount } = useWeb3();
   useEffect(() => {
     async function fetchVideos() {
       try {
         console.log("request sent");
         const videoData = await readDatabase(databaseName);
-
-        setVideos(videoData);
+        if (videoData) setVideos(videoData);
       } catch (error) {
         console.error(error);
       }
@@ -51,12 +72,14 @@ export default function Page() {
 
     const video = [
       {
-        videocid: "QmTv2Tx9XQeLrvg8rs9LCCih6FrHt2mXs3LVBt23ZD7eE7",
+        account: "0xce340d9a71b2aa8f7faa2f989158f14bede3e1b2",
+        created: new Date(),
+        description: "A butterfly",
+        duration: 29,
         thumbnailcid:
-          "bafybeichbrv7je3rh3iruelibdrcqd7cgtkt3yflf2j5pmtqwaeig7rm3i",
-        title: "Shrek full",
-        description: "final testing",
-        account: userAccount,
+          "bafybeid64qxgt3hy533uspw6epeno62zxxvpbevno4z3yb4vhkrdh7373i",
+        title: "Butterfly",
+        videocid: "bafybeic4jzstavqoi67vsjbzj573kuev43vtqoh7ye4ttzcfpn2hhfeyzm",
       },
     ];
     video.forEach(async (video, index) => {
@@ -91,49 +114,57 @@ export default function Page() {
       <Header />
       <div className={classes.container}>
         <main className={classes["videos-container"]}>
-          {videos?.map((videoArray, index) => {
-            const { name: video } = videoArray;
-            const currentTime = new Date();
-            const videoCreationTime = new Date(video.created["$date"]);
-            const timeDifferenceMilliseconds = currentTime - videoCreationTime;
+          {videos.length > 0 ? (
+            videos?.map((videoArray, index) => {
+              const { name: video } = videoArray;
+              const currentTime = new Date();
+              const videoCreationTime = new Date(video.created);
+              const timeDifferenceMilliseconds =
+                currentTime - videoCreationTime;
 
-            let maxTimeUnit = timeUnits[timeUnits.length - 1];
-            for (let i = 0; i < timeUnits.length; i++) {
-              const timeUnit = timeUnits[i];
-              if (timeDifferenceMilliseconds >= timeUnit.milliseconds) {
-                maxTimeUnit = timeUnit;
-                break;
+              let maxTimeUnit = timeUnits[timeUnits.length - 1];
+              for (let i = 0; i < timeUnits.length; i++) {
+                const timeUnit = timeUnits[i];
+                if (timeDifferenceMilliseconds >= timeUnit.milliseconds) {
+                  maxTimeUnit = timeUnit;
+                  break;
+                }
               }
-            }
 
-            const timeDifference =
-              Math.round(
-                timeDifferenceMilliseconds / maxTimeUnit.milliseconds
-              ) +
-              " " +
-              maxTimeUnit.unit +
-              (Math.round(
-                timeDifferenceMilliseconds / maxTimeUnit.milliseconds
-              ) > 1
-                ? "s"
-                : "") +
-              " ago";
-            return (
-              <Link
-                href={`/video-player/${video.videocid}`}
-                key={video.videocid}
-              >
-                <VideoCard
-                  thumbnailCid={video.thumbnailcid}
-                  title={video.title}
-                  channel={"Testing"}
-                  views={views[index]}
-                  timestamp={timeDifference}
-                  timeDuration={video.duration}
-                />
-              </Link>
-            );
-          })}
+              const timeDifference =
+                Math.round(
+                  timeDifferenceMilliseconds / maxTimeUnit.milliseconds
+                ) +
+                " " +
+                maxTimeUnit.unit +
+                (Math.round(
+                  timeDifferenceMilliseconds / maxTimeUnit.milliseconds
+                ) > 1
+                  ? "s"
+                  : "") +
+                " ago";
+              return (
+                <Link
+                  href={`/video-player/${video.videocid}`}
+                  key={video.videocid}
+                >
+                  <VideoCard
+                    thumbnailCid={video.thumbnailcid}
+                    title={video.title}
+                    channel={"Testing"}
+                    views={views[index]}
+                    timestamp={timeDifference}
+                    timeDuration={video.duration}
+                  />
+                </Link>
+              );
+            })
+          ) : (
+            <h1>
+              Be the first One to upload an video.{" "}
+              <Link href={"/upload"}>Click Here</Link>
+            </h1>
+          )}
         </main>
         {/* <button
           onClick={async () => {
