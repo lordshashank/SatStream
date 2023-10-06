@@ -10,7 +10,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <Script src="https://saturn.tech/widget.js"></Script>
-      <Script src="https://vjs.zencdn.net/8.0.4/video.min.js"></Script>
+      <Script src="https://vjs.zencdn.net/8.5.2/video.min.js"></Script>
       <body className={inter.className}>
         <MoralisProvider initializeOnMount={false}>{children}</MoralisProvider>
       </body>

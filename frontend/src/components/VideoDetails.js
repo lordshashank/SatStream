@@ -1,4 +1,5 @@
 import classes from "@/styles/VideoDetails.module.css";
+
 import { AiOutlineFileImage } from "react-icons/ai";
 const VideoDetails = ({
   setDetails,
@@ -6,6 +7,7 @@ const VideoDetails = ({
   file,
   setThumbnail,
   publishDisabled,
+  isLoading,
 }) => {
   const onChangeHandler = (name) => (event) => {
     setDetails((prev) => ({ ...prev, [name]: event.target.value }));
@@ -83,7 +85,7 @@ const VideoDetails = ({
           className={classes.btn}
           disabled={publishDisabled}
         >
-          Publish
+          {isLoading ? <div className="spin"></div> : "Publish"}
         </button>
       </div>
     </>

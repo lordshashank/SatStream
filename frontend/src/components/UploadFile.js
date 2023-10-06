@@ -10,6 +10,7 @@ import useDatabase from "../components/useDatabase";
 const UploadFile = ({ onClose }) => {
   const { userAccount } = useWeb3();
   const [isUploaded, setIsUploaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [duration, setDuration] = useState("");
   const [video, setVideo] = useState(null);
   const [thumbnail, setThumbnail] = useState(null);
@@ -67,6 +68,7 @@ const UploadFile = ({ onClose }) => {
 
   const onPublish = async () => {
     if (thumbnail == null || video == null || !userAccount) return;
+    setIsLoading(true);
     const formData = new FormData();
     formData.append("video", video);
     formData.append("thumbnail", thumbnail);
@@ -86,7 +88,7 @@ const UploadFile = ({ onClose }) => {
         duration: duration,
         created: new Date(),
         thumbnailcid: cids.cid.thumbnail,
-
+        lighthouseCid: cids.cid.lighthouse,
         title: details.title,
         description: details.desc,
 
@@ -96,8 +98,10 @@ const UploadFile = ({ onClose }) => {
       console.log(videoData);
       await writeDb(videoData);
     } catch (err) {
+      setIsLoading(false);
       console.log(err);
     }
+    setIsLoading(false);
     onClose();
   };
 
@@ -129,6 +133,7 @@ const UploadFile = ({ onClose }) => {
             file={video}
             setThumbnail={setThumbnail}
             publishDisabled={publishDisabled}
+            isLoading={isLoading}
           />
         )}
       </div>

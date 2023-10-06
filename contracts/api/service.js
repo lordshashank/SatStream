@@ -1,7 +1,7 @@
 const express = require("express")
 const { ethers } = require("hardhat")
 const User = require("./models/user")
-const { NFTStorage, Blob } = require("nft.storage")
+const { NFTStorage, Blob, File } = require("nft.storage")
 
 const { networkConfig } = require("../helper-hardhat-config")
 const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path
@@ -642,12 +642,14 @@ async function uploadDirectory(directoryPath) {
         files.map(async (file) => {
             const filePath = path.join(directoryPath, file)
             const fileData = await fs.promises.readFile(filePath)
-            const blob = new File([fileData], { type: "application/octet-stream" })
+            const blob = new File([fileData], file, { type: "application/octet-stream" })
             return blob
         })
     )
 
-    const cid = await client.storeDirectory(blobs)
+    if (blobs) {
+        cid = await client.storeDirectory(blobs)
+    }
 
     console.log("Directory uploaded to IPFS with CID:", cid)
 

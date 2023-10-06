@@ -47,6 +47,7 @@ const views = [
 ];
 export default function Page() {
   const [videos, setVideos] = useState([video1]);
+  const [playVideo, setPlayVideo] = useState({ isPlay: false, cid: "" });
   const {
     createDatabase,
     writeInDatabase,
@@ -165,7 +166,7 @@ export default function Page() {
             </h1>
           )}
         </main>
-        <button
+        {/* <button
           onClick={async () => {
             console.log(await createDatabase("SatStream"));
           }}
@@ -185,7 +186,7 @@ export default function Page() {
           }}
         >
           read Database
-        </button>
+        </button> */}
       </div>
     </>
   );
