@@ -156,34 +156,13 @@ class LighthouseAggregator {
 
     async uploadFileAndMakeDeal(filePath) {
         try {
-            // Convert input file to HLS format
-            const outputDir = "./output"
-            const playlistName = "index.m3u8"
-            const hlsFilePath = path.join(outputDir, playlistName)
-            await new Promise((resolve, reject) => {
-                ffmpeg(filePath)
-                    .addOptions([
-                        "-profile:v baseline",
-                        "-level 3.0",
-                        "-start_number 0",
-                        "-hls_time 6",
-                        "-hls_list_size 0",
-                        "-f hls",
-                        "-report",
-                    ])
-                    .output(hlsFilePath)
-                    .on("end", resolve)
-                    .on("error", reject)
-                    .run()
-            })
-            console.log("File converted to HLS format:", hlsFilePath)
-
             const dealParams = {
                 miner: [process.env.MINER],
                 repair_threshold: null,
                 renew_threshold: null,
                 network: process.env.NETWORK,
             }
+
             const response = await lighthouse.upload(
                 filePath,
                 process.env.LIGHTHOUSE_API_KEY,

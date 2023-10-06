@@ -8,18 +8,20 @@ const Page = () => {
     "https://gateway.lighthouse.storage/ipfs/";
 
   return (
-    <div className={classes.backdrop} id="modal">
-      <div className={classes.modal}>
-        <div className={classes["video-player-container"]}>
-          <div className={classes["video-player"]}>
-            <video controls style={{ width: "100%", height: "100%" }}>
-              <source
-                src={`${LIGHTHOUSE_DEAL_DOWNLOAD_ENDPOINT}${videoCid}`}
-                type="video/mp4"
-              />
-            </video>
-          </div>
-        </div>
+    <div className={classes["video-player-container"]}>
+      <div className={classes["video-player"]}>
+        <video
+          id="bunny-video"
+          className="video-js vjs-16-9"
+          data-setup="{}"
+          controls
+          style={{ width: "100%", minHeight: "100vh" }}
+        >
+          <source
+            src={`/ipfs/${videoCid}/output.m3u8`}
+            type="application/x-mpegURL"
+          />
+        </video>
       </div>
     </div>
   );

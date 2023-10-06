@@ -1,8 +1,12 @@
 const express = require("express")
 const { ethers } = require("hardhat")
 const User = require("./models/user")
+const { NFTStorage, Blob, File } = require("nft.storage")
 
 const { networkConfig } = require("../helper-hardhat-config")
+const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path
+const ffmpeg = require("fluent-ffmpeg")
+ffmpeg.setFfmpegPath(ffmpegPath)
 
 const axios = require("axios")
 const app = express()
@@ -10,12 +14,14 @@ const fs = require("fs")
 const path = require("path")
 const multer = require("multer")
 const sleep = require("util").promisify(setTimeout)
-
+const apiKey = process.env.NFT_STORAGE_TOKEN
 const port = 1337
 const contractName = "DealStatus"
 // const contractInstance = "0x6ec8722e6543fB5976a547434c8644b51e24785b" // The user will also input
 const contractInstance = "0xd425641552e3dab1cd97ba7a3b316e3a263b3ce2" // The user will also input
 
+const NFT_STORAGE_TOKEN = process.env.NFT_STORAGE_TOKEN
+const client = new NFTStorage({ token: apiKey })
 const EdgeAggregator = require("./edgeAggregator.js")
 const LighthouseAggregator = require("./lighthouseAggregator.js")
 const upload = multer({ dest: "temp/" }) // Temporary directory for uploads
@@ -110,58 +116,108 @@ app.get("/api/uservideo/:walletaddress", async (req, res) => {
 })
 
 // Uploads a file to the aggregator if it hasn't already been uploaded
-app.post("/api/uploadFile", upload.single("file"), async (req, res) => {
-    // At the moment, this only handles lighthouse.
-    // Depending on the functionality of the Edge aggregator in the future, may or may not match compatibility.
-    console.log("Received file upload request")
+app.post(
+    "/api/uploadFile",
+    upload.fields([{ name: "video" }, { name: "thumbnail" }]),
+    async (req, res) => {
+        // At the moment, this only handles lighthouse.
+        // Depending on the functionality of the Edge aggregator in the future, may or may not match compatibility.
+        console.log("Received file upload request")
 
-    // req.file.path will contain the local file path of the uploaded file on the server
-    const filePath = req.file.path
-    let lighthouse_cid
-    try {
-        // Upload the file to the aggregator
-        lighthouse_cid = await lighthouseAggregatorInstance.uploadFileAndMakeDeal(filePath)
-        // Optionally, you can remove the file from the temp directory if needed
-        fs.unlinkSync(filePath)
-    } catch (err) {
-        console.error(err)
-        res.status(500).send("An error occurred")
-    }
-    const requestReceivedTime = new Date()
-    // Default end date is 1 month from the request received time
-    const defaultEndDate = requestReceivedTime.setMonth(requestReceivedTime.getMonth() + 1)
+        // // req.file.path will contain the local file path of the uploaded file on the server
+        const videoPath = req.files["video"][0].path
+        const thumbnailPath = req.files["thumbnail"][0].path
+        console.log(videoPath, thumbnailPath)
 
-    let newJob = {
-        cid: lighthouse_cid,
-        endDate: defaultEndDate,
-        jobType: "all",
-        replicationTarget: 2,
-        aggregator: "lighthouse",
-        epochs: 4,
-    }
-    if (newJob.cid != null && newJob.cid != "") {
-        try {
-            ethers.utils.toUtf8Bytes(newJob.cid) // this will throw an error if cid is not valid bytes or hex string
-        } catch {
-            console.log("Error: CID must be a hexadecimal string or bytes")
-            return res.status(400).json({
-                error: "CID must be of a valid deal",
+        let lighthouse_cid
+
+        function convertToHLS(inputPath, outputPath, segmentLength = 10) {
+            return new Promise((resolve, reject) => {
+                ffmpeg(inputPath)
+                    .output(outputPath)
+                    .videoCodec("libx264")
+                    .audioCodec("aac")
+                    .addOption("-hls_time", segmentLength)
+                    .addOption("-hls_list_size", 0) // Set to 0 to keep all segments in the playlist
+                    .on("end", () => {
+                        console.log("Conversion finished")
+                        resolve()
+                    })
+                    .on("error", (err) => {
+                        console.error("Error:", err)
+                        reject(err)
+                    })
+                    .run()
             })
         }
-    } else {
-        return res.status(400).json({
-            error: "CID cannot be empty",
-        })
-    }
 
-    console.log("Submitting job to aggregator contract with CID: ", newJob.cid)
-    storedNodeJobs.push(newJob)
-    saveJobsToState()
-    return res.status(201).json({
-        message: "Job registered successfully.",
-        cid: lighthouse_cid,
-    })
-})
+        // Example usage:
+        const inputFilePath = videoPath
+        const outputDirectory = "./output/"
+        const outputPlaylistName = "output.m3u8"
+        const hlsFilePath = "./output"
+
+        const thumbnailCid = await uploadFile(thumbnailPath)
+
+        convertToHLS(inputFilePath, `${outputDirectory}${outputPlaylistName}`)
+            .then(async () => {
+                console.log("Conversion successful")
+                try {
+                    // Upload the file to the aggregator
+                    lighthouse_cid = await lighthouseAggregatorInstance.uploadFileAndMakeDeal(
+                        hlsFilePath
+                    )
+                    // Optionally, you can remove the file from the temp directory if needed
+                    fs.unlinkSync(videoPath)
+                } catch (err) {
+                    console.error(err)
+                    res.status(500).send("An error occurred")
+                }
+                const requestReceivedTime = new Date()
+                // Default end date is 1 month from the request received time
+                const defaultEndDate = requestReceivedTime.setMonth(
+                    requestReceivedTime.getMonth() + 1
+                )
+
+                let newJob = {
+                    cid: lighthouse_cid,
+                    endDate: defaultEndDate,
+                    jobType: "all",
+                    replicationTarget: 2,
+                    aggregator: "lighthouse",
+                    epochs: 4,
+                }
+                if (newJob.cid != null && newJob.cid != "") {
+                    try {
+                        ethers.utils.toUtf8Bytes(newJob.cid) // this will throw an error if cid is not valid bytes or hex string
+                    } catch {
+                        console.log("Error: CID must be a hexadecimal string or bytes")
+                        return res.status(400).json({
+                            error: "CID must be of a valid deal",
+                        })
+                    }
+                } else {
+                    return res.status(400).json({
+                        error: "CID cannot be empty",
+                    })
+                }
+
+                console.log("Submitting job to aggregator contract with CID: ", newJob.cid)
+                storedNodeJobs.push(newJob)
+                saveJobsToState()
+                const cid = await uploadDirectory(hlsFilePath)
+                return res.status(201).json({
+                    message: "Job registered successfully.",
+                    cid: { video: cid, thumbnail: thumbnailCid, lighthouse: lighthouse_cid },
+                })
+            })
+            .catch((error) => {
+                console.error("Conversion failed:", error)
+            })
+
+        console.log("File converted to HLS format:", hlsFilePath)
+    }
+)
 
 // app.post("/api/publish", async (req, res) => {
 //     try {
@@ -579,7 +635,36 @@ async function initializeDataRetrievalListener() {
         console.error("An error occurred:", error)
     })
 }
+async function uploadDirectory(directoryPath) {
+    const files = await fs.promises.readdir(directoryPath)
 
+    const blobs = await Promise.all(
+        files.map(async (file) => {
+            const filePath = path.join(directoryPath, file)
+            const fileData = await fs.promises.readFile(filePath)
+            const blob = new File([fileData], file, { type: "application/octet-stream" })
+            return blob
+        })
+    )
+
+    if (blobs) {
+        cid = await client.storeDirectory(blobs)
+    }
+
+    console.log("Directory uploaded to IPFS with CID:", cid)
+
+    return cid
+}
+async function uploadFile(filePath) {
+    const fileData = await fs.promises.readFile(filePath)
+    const blob = new Blob([fileData], { type: "application/octet-stream" })
+
+    const cid = await client.storeBlob(blob)
+
+    console.log("File uploaded to IPFS with CID:", cid)
+
+    return cid
+}
 async function getBlockNumber() {
     const url = "https://api.node.glif.io"
     const data = {
