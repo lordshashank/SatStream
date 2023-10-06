@@ -4,30 +4,15 @@ import classes from "@/styles/Upload.module.css";
 import Sidebar from "@/components/Sidebar";
 import UploadFile from "@/components/UploadFile";
 import { useState } from "react";
-import { NFTStorage } from "nft.storage";
 
 export default function Page() {
-  const NFT_STORAGE_TOKEN = process.env.NEXT_PUBLIC_NFT_STORAGE_TOKEN;
   const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
-  const client = new NFTStorage({ token: NFT_STORAGE_TOKEN });
-  const LIGHTHOUSE_DEAL_DOWNLOAD_ENDPOINT =
-    "https://gateway.lighthouse.storage/ipfs/";
+
   const [isOpen, setIsOpen] = useState(false);
-  const [file, setFile] = useState(null);
-  const [isUploaded, setIsUploaded] = useState(false);
+
   const onClose = () => {
     setIsOpen(false);
   };
-
-  async function upload() {
-    if (!file) {
-      console.log("No file selected");
-      return;
-    }
-
-    const cids = await client.storeBlob(file);
-    console.log(cids);
-  }
 
   async function handleFileChange(event) {
     await uploadFile(event.target.files[0]);

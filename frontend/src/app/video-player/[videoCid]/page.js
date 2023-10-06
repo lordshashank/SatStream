@@ -4,8 +4,6 @@ import classes from "@/styles/VideoPlayer.module.css";
 const Page = () => {
   const { videoCid } = useParams();
   console.log(videoCid);
-  const LIGHTHOUSE_DEAL_DOWNLOAD_ENDPOINT =
-    "https://gateway.lighthouse.storage/ipfs/";
 
   return (
     <div className={classes["video-player-container"]}>
